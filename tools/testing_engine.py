@@ -1,0 +1,52 @@
+import time
+import tracemalloc
+
+from src.solver import Solver
+from tqdm import trange
+
+
+class TestingEngine:
+    def __init__(self, solver: Solver):
+        self.solver: Solver = solver
+
+    def run_and_measure(self, n: int, runs: int = 1) -> tuple[list[tuple[int, int]], float, float, float]:
+        times = []
+        peak_memories = []
+        correct_count = 0
+        result = []
+        for _ in trange(runs, desc="Running tests", unit="run"):
+            tracemalloc.start()
+            start_time = time.perf_counter()
+            result = self.solver.solve(n)
+            elapsed = time.perf_counter() - start_time
+            current, peak = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+            times.append(elapsed)
+            peak_memories.append(peak)
+            if self.check_answer(n, result):
+                correct_count += 1
+        avg_time = sum(times) / runs
+        avg_peak = sum(peak_memories) / runs
+        right_percentage = (correct_count / runs) * 100
+        return result, avg_time, avg_peak, right_percentage
+
+    def test_solver(self, n: int, runs: int = 1) -> None:
+        print(f"{f'Testing {self.solver.name} with {n=} and {runs=}':^30}".ljust(30, '#'))
+
+        result, avg_time, avg_peak, right_percentage = self.run_and_measure(n, runs)
+
+        print(f"Right answers: {right_percentage:.2f}%")
+        print(f'Execution time: {avg_time:.2f} seconds')
+        print(f'Peak memory usage: {avg_peak / 1024:.2f} KB')
+
+    def check_answer(self, n: int, result: list[tuple[int, int]]) -> bool:
+        if len(result) != n:
+            return False
+        for r, c in result:
+            if not (0 <= r < n and 0 <= c < n):
+                return False
+            for r2, c2 in result:
+                if (r, c) != (r2, c2):
+                    if r == r2 or c == c2 or abs(r - r2) == abs(c - c2):
+                        return False
+        return True
