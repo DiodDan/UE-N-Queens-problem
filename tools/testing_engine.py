@@ -5,11 +5,26 @@ from src.solver import Solver
 from tqdm import trange
 
 
-class TestingEngine:
-    def __init__(self, solver: Solver):
-        self.solver: Solver = solver
+class TestResult:
+    def __init__(self, result: list[tuple[int, int]], time: float, peak_memory: float, correct: float, n=0):
+        self.result = result
+        self.time = time
+        self.peak_memory = peak_memory
+        self.correct = correct
+        self.n = n
 
-    def run_and_measure(self, n: int, runs: int = 1) -> tuple[list[tuple[int, int]], float, float, float]:
+    def __repr__(self):
+        return f"TestResult(result={self.result}, time={self.time:.2f}s, peak_memory={self.peak_memory:.2f}KB, correct={self.correct}, n={self.n})"
+
+
+class TestingEngine:
+    def __init__(self, solver: Solver, print_logs: bool = True):
+        self.solver: Solver = solver
+        self.print_logs = print_logs
+
+    def run_and_measure(self, n: int, runs: int = 1) -> tuple[list[tuple[int, int]], float, float, float, TestResult]:
+        print(f"{f'Testing {self.solver.name} with {n=} and {runs=}':^30}".ljust(30, '#'), flush=True)
+        time.sleep(0.1)
         times = []
         peak_memories = []
         correct_count = 0
@@ -28,16 +43,17 @@ class TestingEngine:
         avg_time = sum(times) / runs
         avg_peak = sum(peak_memories) / runs
         right_percentage = (correct_count / runs) * 100
-        return result, avg_time, avg_peak, right_percentage
+        run_results = TestResult(result, avg_time, avg_peak / 1024, right_percentage)
+        return result, avg_time, avg_peak, right_percentage, run_results
 
-    def test_solver(self, n: int, runs: int = 1) -> None:
-        print(f"{f'Testing {self.solver.name} with {n=} and {runs=}':^30}".ljust(30, '#'))
+    def test_solver(self, n: int, runs: int = 1) -> TestResult:
+        result, avg_time, avg_peak, right_percentage, run_results = self.run_and_measure(n, runs)
 
-        result, avg_time, avg_peak, right_percentage = self.run_and_measure(n, runs)
-
-        print(f"Right answers: {right_percentage:.2f}%")
-        print(f'Execution time: {avg_time:.2f} seconds')
-        print(f'Peak memory usage: {avg_peak / 1024:.2f} KB')
+        if self.print_logs:
+            print(f"Right answers: {right_percentage:.2f}%")
+            print(f'Execution time: {avg_time:.2f} seconds')
+            print(f'Peak memory usage: {avg_peak / 1024:.2f} KB')
+        return run_results
 
     def check_answer(self, n: int, result: list[tuple[int, int]]) -> bool:
         if len(result) != n:

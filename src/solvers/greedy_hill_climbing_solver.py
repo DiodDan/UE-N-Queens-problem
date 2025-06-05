@@ -1,18 +1,17 @@
 import random
-import heapq
 from functools import lru_cache
-from typing import override, List, Tuple, Optional
+from typing import override, Optional
 
 from src.solver import Solver
 
 
 class GreedyHillClimbingSolver(Solver):
-    def __init__(self, max_restarts: int = 10):
+    def __init__(self, max_restarts: int = 200):
         self.name = "Hill Climbing Solver"
         self.base_restarts = max_restarts
 
     @override
-    def solve(self, n: int) -> List[Tuple[int, int]]:
+    def solve(self, n: int) -> list[tuple[int, int]]:
         @lru_cache(maxsize=10000)
         def heuristic(board_tuple):
             conflicts = 0
@@ -74,14 +73,13 @@ class GreedyHillClimbingSolver(Solver):
         return []
 
 
-
 class OptimizedHillClimbingSolver(Solver):
     def __init__(self, max_restarts: int = 20):
         self.name = "Optimized Hill Climbing Solver"
         self.max_restarts = max_restarts
 
-    def solve(self, n: int) -> List[Tuple[int, int]]:
-        def count_conflicts(board: List[int], row: int, col: int) -> int:
+    def solve(self, n: int) -> list[tuple[int, int]]:
+        def count_conflicts(board: list[int], row: int, col: int) -> int:
             """Count conflicts for a specific queen position (optimized)"""
             conflicts = 0
             for r in range(n):
@@ -92,7 +90,7 @@ class OptimizedHillClimbingSolver(Solver):
                     conflicts += 1
             return conflicts
 
-        def get_conflicting_queens(board: List[int]) -> List[int]:
+        def get_conflicting_queens(board: list[int]) -> list[int]:
             """Identify only queens involved in conflicts"""
             conflicts = set()
             for i in range(n):
@@ -102,7 +100,7 @@ class OptimizedHillClimbingSolver(Solver):
                         conflicts.add(j)
             return list(conflicts)
 
-        def hill_climb() -> Optional[List[int]]:
+        def hill_climb() -> Optional[list[int]]:
             board = [random.randint(0, n - 1) for _ in range(n)]
 
             for _ in range(200 * n):  # Max steps scales with board size

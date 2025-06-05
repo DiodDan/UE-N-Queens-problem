@@ -1,1 +1,1 @@
-import src.solvers.dfs_exhaustive_solver, src.solvers.greedy_hill_climbing_solver, src.solvers.simulated_annealing_solver
+import src.solvers.dfs_exhaustive_solver, src.solvers.greedy_hill_climbing_solver, src.solvers.genetic_algorithm_solver

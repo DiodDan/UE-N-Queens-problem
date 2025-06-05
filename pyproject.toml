@@ -12,6 +12,9 @@ requires-python = ">=3.13"
 [tool.poetry.dependencies]
 python = ">=3.13"
 tqdm = "^4.67.1"
+seaborn = "^0.13.2"
+matplotlib = "^3.10.3"
+pandas = "^2.2.3"
 
 
 [build-system]

@@ -1,15 +1,14 @@
 import random
 from typing import override
-
 from src.solver import Solver
 
 
 class GeneticAlgorithmSolver(Solver):
     def __init__(
-        self,
-        population_size=100,
-        mutation_rate=0.05,
-        max_generations=1000,
+            self,
+            population_size=100,
+            mutation_rate=0.05,
+            max_generations=1000,
     ):
         self.name = "Genetic Algorithm Solver"
         self.population_size = population_size
