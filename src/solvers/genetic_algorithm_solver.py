@@ -8,7 +8,7 @@ class GeneticAlgorithmSolver(Solver):
             self,
             population_size=100,
             mutation_rate=0.05,
-            max_generations=1000,
+            max_generations=10000,
     ):
         self.name = "Genetic Algorithm Solver"
         self.population_size = population_size

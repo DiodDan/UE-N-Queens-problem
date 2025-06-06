@@ -16,7 +16,8 @@ class BenchmarkEngine:
             plot_name: str,
             print_logs: bool = True,
             plot_dir: str = "plots",
-            iter_save: bool = False
+            iter_save: bool = False,
+            single_run_timeout: int = 120
     ):
         """
         solver_class: class implementing .solve() method
@@ -31,10 +32,15 @@ class BenchmarkEngine:
         self.print_logs = print_logs
         self.plot_dir = plot_dir
         self.iter_save = iter_save
+        self.single_run_timeout = single_run_timeout
 
     def run(self):
         for n, runs in self.execution_configs:
-            self.results.append(TestingEngine(self.solver, self.print_logs).test_solver(n=n, runs=runs))
+            test_engine = TestingEngine(self.solver, self.print_logs, self.single_run_timeout)
+            test_result = test_engine.test_solver(n=n, runs=runs)
+            if test_result.timeout:
+                break
+            self.results.append(test_result)
             self.results[-1].n = n
             if self.iter_save:
                 self.save_plots()
