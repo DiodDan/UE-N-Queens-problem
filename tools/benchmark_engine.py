@@ -16,7 +16,8 @@ class BenchmarkEngine:
             plot_name: str,
             print_logs: bool = True,
             plot_dir: str = "plots",
-            iter_save: bool = False
+            iter_save: bool = False,
+            single_run_timeout: int = 120
     ):
         """
         solver_class: class implementing .solve() method
@@ -31,10 +32,15 @@ class BenchmarkEngine:
         self.print_logs = print_logs
         self.plot_dir = plot_dir
         self.iter_save = iter_save
+        self.single_run_timeout = single_run_timeout
 
     def run(self):
+        test_engine = TestingEngine(self.solver, self.print_logs, self.single_run_timeout)
         for n, runs in self.execution_configs:
-            self.results.append(TestingEngine(self.solver, self.print_logs).test_solver(n=n, runs=runs))
+            test_result = test_engine.test_solver(n=n, runs=runs)
+            if test_result.timeout:
+                break
+            self.results.append(test_result)
             self.results[-1].n = n
             if self.iter_save:
                 self.save_plots()
@@ -164,7 +170,12 @@ def aggregate_benchmarks(plot_dir: str = "plots", output_name: str = "aggregate_
             subdf = df[df["Algorithm"] == algo]
             axes[i].plot(subdf["N"], subdf[metric], marker='o', label=algo, color=colors[j])
         axes[i].set_title(f"N-Queens Solver {metric} Comparison", color='white')
-        axes[i].set_ylabel(metric, color='white')
+        ylabel = {
+            "Time": "Time (seconds)",
+            "Memory": "Memory (KB)",
+            "Correct": "Correct Rate (%)"
+        }[metric]
+        axes[i].set_ylabel(ylabel, color='white')
         axes[i].set_xlabel('N', color='white')
         axes[i].tick_params(colors='white')
         axes[i].legend()
