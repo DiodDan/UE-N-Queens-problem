@@ -203,19 +203,19 @@ if __name__ == "__main__":
         # Running all algorithms benchmarks
         threads = []
 
-        # threads.append(run_DFSExhaustiveSolver_benchmark())  # DFS Exhaustive Solver
+        threads.append(run_DFSExhaustiveSolver_benchmark())  # DFS Exhaustive Solver
 
-        # threads.append(run_GeneticAlgorithmSolver_benchmark())  # Genetic Algorithm Solver
+        threads.append(run_GeneticAlgorithmSolver_benchmark())  # Genetic Algorithm Solver
 
-        # threads.append(run_OptimizedGeneticSolver_benchmark())  # Optimized Genetic Solver
-        #
-        # threads.append(run_GreedyHillClimbingSolver_benchmark())  # Greedy Hill Climbing Solver
-        #
-        # threads.append(run_OptimizedHillClimbingSolver_benchmark())  # Optimized Hill Climbing Solver
-        #
-        # threads.append(run_SimulatedAnnealingSolver_benchmark())  # Simulated Annealing Solver
-        #
-        # threads.append(run_NovelMutationGeneticSolver_benchmark())  # Novel Mutation Genetic Solver
+        threads.append(run_OptimizedGeneticSolver_benchmark())  # Optimized Genetic Solver
+
+        threads.append(run_GreedyHillClimbingSolver_benchmark())  # Greedy Hill Climbing Solver
+
+        threads.append(run_OptimizedHillClimbingSolver_benchmark())  # Optimized Hill Climbing Solver
+
+        threads.append(run_SimulatedAnnealingSolver_benchmark())  # Simulated Annealing Solver
+
+        threads.append(run_NovelMutationGeneticSolver_benchmark())  # Novel Mutation Genetic Solver
 
         # Wait for all threads to complete
         for thread in threads:
