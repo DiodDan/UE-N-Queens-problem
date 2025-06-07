@@ -33,6 +33,14 @@ EXECUTION_CONFIGS = [
     (80, 10),
     (90, 10),
     (100, 5),
+    (150, 5),
+    (200, 5),
+    (250, 5),
+    (300, 5),
+    (350, 5),
+    (400, 5),
+    (450, 5),
+    (500, 5),
 
 ]
 
@@ -56,15 +64,16 @@ def run_DFSExhaustiveSolver_benchmark() -> Optional[threading.Thread]:
 def run_GeneticAlgorithmSolver_benchmark() -> Optional[threading.Thread]:
     solver = GeneticAlgorithmSolver(
         population_size=100,
-        mutation_rate=0.01,
-        max_generations=1000,
+        mutation_rate=0.2,
+        max_generations=10000,
     )
 
     benchmark_engine = BenchmarkEngine(
         solver=solver,
         execution_configs=EXECUTION_CONFIGS,
         plot_name="GeneticAlgorithmSolver",
-        print_logs=False
+        print_logs=False,
+        iter_save=True
     )
 
     if RUN_IN_MULTITHREAD:
@@ -97,7 +106,7 @@ def run_GreedyHillClimbingSolver_benchmark() -> Optional[threading.Thread]:
     benchmark_engine = BenchmarkEngine(
         solver=solver,
         execution_configs=EXECUTION_CONFIGS,
-        plot_name="GreedyHillClimbingSolver",
+        plot_name="GreedyHillClimbingSolver_no_cache",
         print_logs=False
     )
 
@@ -195,15 +204,15 @@ if __name__ == "__main__":
         threads = []
 
         # threads.append(run_DFSExhaustiveSolver_benchmark())  # DFS Exhaustive Solver
-        #
+
         # threads.append(run_GeneticAlgorithmSolver_benchmark())  # Genetic Algorithm Solver
-        #
+
         # threads.append(run_OptimizedGeneticSolver_benchmark())  # Optimized Genetic Solver
         #
         # threads.append(run_GreedyHillClimbingSolver_benchmark())  # Greedy Hill Climbing Solver
-
-        threads.append(run_OptimizedHillClimbingSolver_benchmark())  # Optimized Hill Climbing Solver
-
+        #
+        # threads.append(run_OptimizedHillClimbingSolver_benchmark())  # Optimized Hill Climbing Solver
+        #
         # threads.append(run_SimulatedAnnealingSolver_benchmark())  # Simulated Annealing Solver
         #
         # threads.append(run_NovelMutationGeneticSolver_benchmark())  # Novel Mutation Genetic Solver

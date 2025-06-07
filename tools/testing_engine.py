@@ -3,6 +3,7 @@ import tracemalloc
 
 from src.solver import Solver, TimeoutException
 from tqdm import trange
+import gc
 
 
 class TestResult:
@@ -27,11 +28,16 @@ class TestingEngine:
     def run_and_measure(self, n: int, runs: int = 1) -> tuple[list[tuple[int, int]], float, float, float, TestResult]:
         print(f"{f'Testing {self.solver.name} with {n=} and {runs=}':^30}".ljust(30, '#'), flush=True)
         time.sleep(0.1)
+
+        if tracemalloc.is_tracing():
+            tracemalloc.stop()
+
         times = []
         peak_memories = []
         correct_count = 0
         result = []
         for _ in trange(runs, desc="Running tests", unit="run"):
+            gc.disable()
             tracemalloc.start()
             start_time = time.perf_counter()
             try:
@@ -42,14 +48,15 @@ class TestingEngine:
             elapsed = time.perf_counter() - start_time
             current, peak = tracemalloc.get_traced_memory()
             tracemalloc.stop()
+            gc.enable()
             times.append(elapsed)
             peak_memories.append(peak)
             if self.check_answer(n, result):
                 correct_count += 1
         avg_time = sum(times) / runs
-        avg_peak = sum(peak_memories) / runs
+        avg_peak = sum(peak_memories) / runs / 1024  # Convert to KB for storage
         right_percentage = (correct_count / runs) * 100
-        run_results = TestResult(result, avg_time, avg_peak / 1024, right_percentage)
+        run_results = TestResult(result, avg_time, avg_peak, right_percentage)
         return result, avg_time, avg_peak, right_percentage, run_results
 
     def test_solver(self, n: int, runs: int = 1) -> TestResult:
@@ -58,7 +65,7 @@ class TestingEngine:
         if self.print_logs:
             print(f"Right answers: {right_percentage:.2f}%")
             print(f'Execution time: {avg_time:.2f} seconds')
-            print(f'Peak memory usage: {avg_peak / 1024:.2f} KB')
+            print(f'Peak memory usage: {avg_peak:.2f} KB')
         return run_results
 
     def check_answer(self, n: int, result: list[tuple[int, int]]) -> bool:
